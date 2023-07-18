@@ -5,27 +5,27 @@ var $TABLE = $('#table');
 var $BTN = $('#export-btn');
 var $EXPORT = $('#export');
 
-
+// get current time for default start_date.
 let dt = moment().format('YYYY/MM/DD');
 $TABLE.find('.start_date').find('.date').text(dt)
 
 
-// now we can call our Command!
-// You will see "Welcome from Tauri" replaced
-// by "Hello, World!"!
+// load data from backend.
 invoke('load')
-// `invoke` returns a Promise
 .then((response) => {
     console.log(response)
     response.forEach(line => {
         var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
 
+        // fill data to new document
         $clone.find('td.document_name').text(line.document_name)
         $clone.find('td.document_version').text(line.document_version)
         $clone.find('td.document_status').text(line.document_status)
         $clone.find('td.start_date').find('.date').text(line.start_date)
         let remain_date = moment(line.target_date, "YYYYMMDD").diff(moment(), "days");
         $clone.find('td.remain_date').text(remain_date)
+
+        // highlight remain_date <= 10.
         if(remain_date <= 10){
             $clone.find('td.remain_date').css({ 'color': 'red', 'font-size': '150%' });
         }
@@ -52,6 +52,7 @@ invoke('load')
 })
 
 
+// add new document.
 $('.table-add').click(function () {
   var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
   // Binds the hidden input to be used as datepicker.
@@ -72,16 +73,22 @@ $('.table-add').click(function () {
   $TABLE.find('table').append($clone);
 });
 
+
+// remove document.
 $('.table-remove').click(function () {
   $(this).parents('tr').detach();
 });
 
+
+// move up document.
 $('.table-up').click(function () {
   var $row = $(this).parents('tr');
   if ($row.index() === 1) return; // Don't go above the header
   $row.prev().before($row.get(0));
 });
 
+
+// move down document.
 $('.table-down').click(function () {
   var $row = $(this).parents('tr');
   $row.next().after($row.get(0));
@@ -91,6 +98,8 @@ $('.table-down').click(function () {
 jQuery.fn.pop = [].pop;
 jQuery.fn.shift = [].shift;
 
+
+// save table
 $BTN.click(function () {
   var $rows = $TABLE.find('tr:not(:hidden)').not('.col_name');
   var data = [];
@@ -112,9 +121,8 @@ $BTN.click(function () {
     data.push(h);
   });
   
-  // Output the result
+  // save result to backend.
   invoke('save', {req: data})
-//   $EXPORT.text(JSON.stringify(data));
 });
 
 
