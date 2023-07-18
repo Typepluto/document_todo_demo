@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
+    "tailwindcss": "^3.3.3"
+  },
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}
